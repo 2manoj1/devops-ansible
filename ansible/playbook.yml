@@ -3,6 +3,12 @@
   hosts: all
   become: yes  # If you need sudo privileges to run the script
   tasks:
+    - name: Create a temporary file for the private key
+      copy:
+        content: "{{ lookup('env', 'SSH_PRIVATE_KEY') }}"  # Get the private key from the environment
+        dest: /tmp/private_key
+        mode: '0600'
+
     - name: Copy setup.sh to the remote server
       copy:
         src: ../scripts/setup.sh  # Copying from the scripts folder in the local repo

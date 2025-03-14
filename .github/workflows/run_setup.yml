@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2  # Checks out the repository to the runner
 
-      - name: Set up SSH
+      - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.5.3  # Uses SSH agent to connect to a remote server
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Using the private key from GitHub secrets
@@ -22,7 +22,6 @@ jobs:
         run: |
           echo "SSH_USER=${{ secrets.SSH_USER }}" >> $GITHUB_ENV
           echo "SSH_HOST=${{ secrets.SSH_HOST }}" >> $GITHUB_ENV
-          echo "SSH_PRIVATE_KEY_PATH=${{ secrets.SSH_PRIVATE_KEY_PATH }}" >> $GITHUB_ENV
 
       - name: Run Ansible Playbook
         run: |
