@@ -1,0 +1,13 @@
+---
+- name: Run setup script on remote server
+  hosts: all
+  become: yes  # If you need sudo privileges to run the script
+  tasks:
+    - name: Copy setup.sh to the remote server
+      copy:
+        src: ../scripts/setup.sh  # Copying from the scripts folder in the local repo
+        dest: /tmp/setup.sh
+        mode: '0755'
+
+    - name: Execute the setup.sh script
+      command: /tmp/setup.sh

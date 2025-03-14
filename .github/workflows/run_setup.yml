@@ -1,0 +1,33 @@
+name: Run Setup Script
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the main branch
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest  # This will use an Ubuntu environment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Checks out the repository to the runner
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3  # Uses SSH agent to connect to a remote server
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Using the private key from GitHub secrets
+
+      - name: Set up environment variables for Ansible
+        run: |
+          echo "SSH_USER=${{ secrets.SSH_USER }}" >> $GITHUB_ENV
+          echo "SSH_HOST=${{ secrets.SSH_HOST }}" >> $GITHUB_ENV
+          echo "SSH_PRIVATE_KEY_PATH=${{ secrets.SSH_PRIVATE_KEY_PATH }}" >> $GITHUB_ENV
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Passing the SSH private key via environment variable
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
