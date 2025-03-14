@@ -49,10 +49,6 @@
         owner: root
         group: root
 
-    - name: Check if setup.sh exists
-      run: |
-        ls -al scripts/setup.sh
-
     - name: Copy setup.sh to the remote server
       copy:
         src: scripts/setup.sh  # Path to the setup.sh script in the local repo

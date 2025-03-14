@@ -25,11 +25,9 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Install Ansible
-        shell: bash
+      - name: Check if setup.sh exists
         run: |
-          sudo apt update
-          sudo apt install -y ansible
+          ls -al scripts/setup.sh
 
       # Run Ansible Playbook
       - name: Run Ansible Playbook
