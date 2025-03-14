@@ -3,6 +3,16 @@
   hosts: all
   become: yes  # If you need sudo privileges to run the script
   tasks:
+    - name: Debug SSH_PRIVATE_KEY variable
+      debug:
+        msg: "SSH private key from environment: {{ lookup('env', 'SSH_PRIVATE_KEY') }}"
+
+    - name: Debug SSH_USER and SSH_HOST
+      debug:
+        msg:
+          - "SSH_USER: {{ lookup('env', 'SSH_USER') }}"
+          - "SSH_HOST: {{ lookup('env', 'SSH_HOST') }}"
+
     - name: Create a temporary file for the private key
       copy:
         content: "{{ lookup('env', 'SSH_PRIVATE_KEY') }}"  # Get the private key from the environment
