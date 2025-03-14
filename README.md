@@ -32,6 +32,7 @@ To add these secrets to your repository:
 
 ## Repository Structure
 
+<img width="726" alt="Screenshot 2025-03-14 at 4 27 20 PM" src="https://github.com/user-attachments/assets/2dd67f9e-b0c3-4523-99fa-3afd34b5af03" />
 
 ## Running the Setup
 
