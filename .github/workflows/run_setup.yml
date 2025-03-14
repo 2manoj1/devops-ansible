@@ -21,6 +21,10 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key.pem
           chmod 600 /tmp/private_key.pem  # Ensure the private key has the correct permissions
 
+          # Add the remote host to known_hosts to avoid "Host key verification failed"
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
       - name: Install Ansible
         shell: bash
         run: |
@@ -30,6 +34,8 @@ jobs:
       # Run Ansible Playbook
       - name: Run Ansible Playbook
         run: |
+          echo "Running Ansible Playbook on host: $SSH_HOST $SSH_USER "  # Debug log
+          cat /tmp/private_key.pem
           ansible-playbook ansible/playbook.yml -i $SSH_HOST, --private-key /tmp/private_key.pem --user $SSH_USER
         env:
           SSH_USER: ${{ secrets.SSH_USER }}  # GitHub Secret for SSH user
