@@ -12,20 +12,19 @@ jobs:
     steps:
       # Checkout the repository code
       - name: Checkout code
-        uses: actions/checkout@v2  # Checks out the repository to the runner
+        uses: actions/checkout@v4  # Checks out the repository to the runner
 
       # Set up SSH agent for authentication with the remote server
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.5.3  # Uses SSH agent to connect to a remote server
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Use the private key from GitHub Secrets
-
-      # Debug the environment variables to ensure they are available
-      - name: Debug environment variables in GitHub Actions
+      - name: Set up SSH
         run: |
-          echo "SSH_USER=${{ secrets.SSH_USER }}"
-          echo "SSH_HOST=${{ secrets.SSH_HOST }}"
-          echo "SSH_PRIVATE_KEY (first 20 chars): ${SSH_PRIVATE_KEY:0:20}"  # Print first 20 chars of private key for debugging (without exposing full key)
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Install Ansible
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
 
       # Set environment variables for Ansible
       - name: Set up environment variables for Ansible
@@ -42,11 +41,8 @@ jobs:
 
       # Run Ansible Playbook
       - name: Run Ansible Playbook
+      - env:
+          ANSIBLE_USER: ${{ secrets.ANSIBLE_USER }}
+          ANSIBLE_HOST_KEY_CHECKING: False
         run: |
-          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
-            -e ssh_host=${{ secrets.SSH_HOST }} \
-            -e ssh_user=${{ secrets.SSH_USER }}
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Pass SSH private key via environment variable
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}

@@ -1,29 +1,7 @@
----
 - name: Run setup script on remote server
   hosts: all
   become: yes  # If you need sudo privileges to run the script
   tasks:
-    - name: Debug SSH_PRIVATE_KEY variable
-      debug:
-        msg: "SSH private key from environment: {{ lookup('env', 'SSH_PRIVATE_KEY') }}"
-
-    - name: Debug SSH_USER and SSH_HOST
-      debug:
-        msg:
-          - "SSH_USER: {{ lookup('env', 'SSH_USER') }}"
-          - "SSH_HOST: {{ lookup('env', 'SSH_HOST') }}"
-
-    - name: Create a temporary file for the private key
-      copy:
-        content: "{{ lookup('env', 'SSH_PRIVATE_KEY') }}"  # Copy private key to a temp file
-        dest: /tmp/private_key
-        mode: '0600'
-
-    - name: Set the correct SSH permissions for the private key
-      file:
-        path: /tmp/private_key
-        mode: '0600'
-
     - name: Ensure /opt/runai directory exists
       file:
         path: /opt/runai
@@ -47,8 +25,3 @@
         content: "{{ setup_output.stdout }}"
         dest: /opt/runai/output_setup.txt
         mode: '0644'
-
-    - name: Clean up the private key
-      file:
-        path: /tmp/private_key
-        state: absent
