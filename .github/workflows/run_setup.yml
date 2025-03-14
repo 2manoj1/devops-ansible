@@ -16,19 +16,18 @@ jobs:
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.5.3  # Uses SSH agent to connect to a remote server
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Using the private key from GitHub secrets
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Use the private key from GitHub Secrets
 
       - name: Debug environment variables in GitHub Actions
         run: |
           echo "SSH_USER=${{ secrets.SSH_USER }}"
           echo "SSH_HOST=${{ secrets.SSH_HOST }}"
-          echo "SSH_PRIVATE_KEY (first 20 chars): ${SSH_PRIVATE_KEY:0:20}"  # Show first 20 chars of private key (to avoid exposing it fully)
-          
+          echo "SSH_PRIVATE_KEY (first 20 chars): ${SSH_PRIVATE_KEY:0:20}"  # Print first 20 chars of private key for debugging (without exposing full key)
+
       - name: Set up environment variables for Ansible
         run: |
           echo "SSH_USER=${{ secrets.SSH_USER }}" >> $GITHUB_ENV
           echo "SSH_HOST=${{ secrets.SSH_HOST }}" >> $GITHUB_ENV
-          echo "SSH_PRIVATE_KEY=${{ secrets.SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
 
       - name: Debug environment variables in Ansible
         run: |
@@ -40,6 +39,6 @@ jobs:
         run: |
           ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Passing the SSH private key via environment variable
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Pass SSH private key via environment variable
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
