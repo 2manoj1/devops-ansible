@@ -27,6 +27,7 @@ jobs:
 
       - name: Check if setup.sh exists
         run: |
+          ls -R
           ls -al scripts/setup.sh
 
       # Run Ansible Playbook
