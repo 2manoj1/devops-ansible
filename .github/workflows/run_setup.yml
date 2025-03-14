@@ -42,7 +42,9 @@ jobs:
       # Run Ansible Playbook
       - name: Run Ansible Playbook
         env:
-          ANSIBLE_USER: ${{ secrets.ANSIBLE_USER }}
-          ANSIBLE_HOST_KEY_CHECKING: False
+          ANSIBLE_USER: ${{ secrets.SSH_USER }}
+          ANSIBLE_HOST: ${{ secrets.SSH_HOST }}
+          ANSIBLE_HOST_KEY_CHECKING: False  # Disables SSH host key checking
         run: |
-          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
+          ansible-playbook ansible/playbook.yml --private-key private_key.pem -u ${{ secrets.SSH_USER }} \
+          -e ssh_host=${{ secrets.SSH_HOST }} -e ssh_user=${{ secrets.SSH_USER }}

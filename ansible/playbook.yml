@@ -1,7 +1,13 @@
 - name: Run setup script on remote server
-  hosts: all
+  hosts: "{{ ssh_host }}"
   become: yes  # If you need sudo privileges to run the script
   tasks:
+    - name: Debug environment variables
+      debug:
+        msg:
+          - "SSH_USER: {{ ssh_user }}"
+          - "SSH_HOST: {{ ssh_host }}"
+          
     - name: Ensure /opt/runai directory exists
       file:
         path: /opt/runai
