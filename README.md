@@ -5,7 +5,6 @@
 │
 ├── ansible/
 │   ├── playbook.yml                   # Ansible playbook to run setup.sh
-│   ├── inventory.ini                  # Ansible inventory file
 │
 ├── scripts/
 │   └── setup.sh                       # The setup script to run on the local or remote server
