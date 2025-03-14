@@ -1,33 +1,61 @@
+---
 - name: Run setup script on remote server
-  hosts: "{{ ssh_host }}"
-  become: yes  # If you need sudo privileges to run the script
+  hosts: "{{ lookup('env', 'SSH_HOST') }}"   # Dynamically resolve the SSH_HOST from environment
+  become: yes  # Ensure all tasks run as root
+  become_user: root  # Explicitly specify to run tasks as the root user
+  vars:
+    ansible_ssh_common_args: '-o ConnectTimeout=120'  # Set connection timeout to 120 seconds
+
   tasks:
+    - name: Set up environment variables for Ansible
+      set_fact:
+        ssh_user: "{{ lookup('env', 'SSH_USER') }}"
+        ssh_host: "{{ lookup('env', 'SSH_HOST') }}"
+        private_key_content: "{{ lookup('env', 'SSH_PRIVATE_KEY') }}"
+
     - name: Debug environment variables
       debug:
         msg:
           - "SSH_USER: {{ ssh_user }}"
           - "SSH_HOST: {{ ssh_host }}"
-          
-    - name: Ensure /opt/runai directory exists
+          - "Private Key Length: {{ private_key_content | length }} characters"
+
+    - name: Ensure /opt/runai directory exists on remote server with correct permissions
       file:
         path: /opt/runai
         state: directory
-        mode: '0755'
+        mode: '0775'  # Ensure the directory is writable by the owner and group (root group)
+        owner: root
+        group: root
+
+    - name: Create a private key file on the runner
+      copy:
+        content: "{{ private_key_content }}"
+        dest: "/opt/runai/private_key.pem"
+        mode: '0600'  # Make sure it's only readable by the owner (the playbook runner) 
+
+    - name: Create the log file if it doesn't exist
+      file:
+        path: /opt/runai/setup_output.log
+        state: touch  # Create the file if it doesn't exist
+        owner: root
+        group: root
+        mode: '0600'  # Set permissions to be readable and writable only by the owner (root)
+
+    - name: Set correct permissions for the log file
+      file:
+        path: /opt/runai/setup_output.log
+        mode: '0600'  # Only the root user can read and write to the log file
+        owner: root
+        group: root
 
     - name: Copy setup.sh to the remote server
       copy:
-        src: ../scripts/setup.sh  # Copy the setup.sh script from your repo
+        src: ./setup.sh  # Adjust the path to where your local setup.sh is
         dest: /opt/runai/setup.sh
-        mode: '0755'
+        mode: '0755'  # Ensure the script is executable
 
-    - name: Execute the setup.sh script and log the output
-      shell: |
-        /opt/runai/setup.sh > /opt/runai/output_setup.txt 2>&1
-      register: setup_output
-      ignore_errors: yes
-
-    - name: Store the output of the script in a log file
-      copy:
-        content: "{{ setup_output.stdout }}"
-        dest: /opt/runai/output_setup.txt
-        mode: '0644'
+    - name: Execute the setup.sh script on remote server and log output
+      shell: bash /opt/runai/setup.sh >> /opt/runai/setup_output.log 2>&1
+      args:
+        chdir: /opt/runai  # Ensure the script is run from the correct directory
