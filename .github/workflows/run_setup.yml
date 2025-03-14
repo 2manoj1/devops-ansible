@@ -17,8 +17,9 @@ jobs:
       # Set up SSH agent for authentication with the remote server
       - name: Set up SSH
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private_key.pem  # Corrected the private key filename
-          chmod 600 ~/.ssh/private_key.pem  # Ensure the private key has the correct permissions
+          # Store the private key in /tmp
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key.pem
+          chmod 600 /tmp/private_key.pem  # Ensure the private key has the correct permissions
 
       - name: Install Ansible
         shell: bash
@@ -31,7 +32,7 @@ jobs:
         run: |
           ansible-playbook ansible/playbook.yml \
             -i $SSH_HOST, \  # Ensure $SSH_HOST is a valid IP or hostname (add a comma)
-            --private-key ~/.ssh/private_key.pem \
+            --private-key /tmp/private_key.pem \
             --user $SSH_USER
         env:
           SSH_USER: ${{ secrets.SSH_USER }}  # GitHub Secret for SSH user
