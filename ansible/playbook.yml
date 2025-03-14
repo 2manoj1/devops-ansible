@@ -19,11 +19,36 @@
         dest: /tmp/private_key
         mode: '0600'
 
+    - name: Set the correct SSH permissions for the private key
+      file:
+        path: /tmp/private_key
+        mode: '0600'
+
+    - name: Ensure /opt/runai directory exists
+      file:
+        path: /opt/runai
+        state: directory
+        mode: '0755'
+
     - name: Copy setup.sh to the remote server
       copy:
         src: ../scripts/setup.sh  # Copy the setup.sh script from your repo
-        dest: /tmp/setup.sh
+        dest: /opt/runai/setup.sh
         mode: '0755'
 
-    - name: Execute the setup.sh script
-      command: /tmp/setup.sh
+    - name: Execute the setup.sh script and log the output
+      shell: |
+        /opt/runai/setup.sh > /opt/runai/output_setup.txt 2>&1
+      register: setup_output
+      ignore_errors: yes
+
+    - name: Store the output of the script in a log file
+      copy:
+        content: "{{ setup_output.stdout }}"
+        dest: /opt/runai/output_setup.txt
+        mode: '0644'
+
+    - name: Clean up the private key
+      file:
+        path: /tmp/private_key
+        state: absent

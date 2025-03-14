@@ -10,31 +10,37 @@ jobs:
     runs-on: ubuntu-latest  # This will use an Ubuntu environment
 
     steps:
+      # Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v2  # Checks out the repository to the runner
 
+      # Set up SSH agent for authentication with the remote server
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.5.3  # Uses SSH agent to connect to a remote server
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Use the private key from GitHub Secrets
 
+      # Debug the environment variables to ensure they are available
       - name: Debug environment variables in GitHub Actions
         run: |
           echo "SSH_USER=${{ secrets.SSH_USER }}"
           echo "SSH_HOST=${{ secrets.SSH_HOST }}"
           echo "SSH_PRIVATE_KEY (first 20 chars): ${SSH_PRIVATE_KEY:0:20}"  # Print first 20 chars of private key for debugging (without exposing full key)
 
+      # Set environment variables for Ansible
       - name: Set up environment variables for Ansible
         run: |
           echo "SSH_USER=${{ secrets.SSH_USER }}" >> $GITHUB_ENV
           echo "SSH_HOST=${{ secrets.SSH_HOST }}" >> $GITHUB_ENV
 
+      # Debug the environment variables in the context of the Ansible playbook
       - name: Debug environment variables in Ansible
         run: |
           echo "Environment Variables:"
           echo "SSH_USER=${{ secrets.SSH_USER }}"
           echo "SSH_HOST=${{ secrets.SSH_HOST }}"
 
+      # Run Ansible Playbook
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
