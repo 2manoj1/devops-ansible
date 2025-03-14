@@ -30,10 +30,7 @@ jobs:
       # Run Ansible Playbook
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook ansible/playbook.yml \
-            -i $SSH_HOST, \  # Ensure $SSH_HOST is a valid IP or hostname (add a comma)
-            --private-key /tmp/private_key.pem \
-            --user $SSH_USER
+          ansible-playbook ansible/playbook.yml -i $SSH_HOST, --private-key /tmp/private_key.pem --user $SSH_USER
         env:
           SSH_USER: ${{ secrets.SSH_USER }}  # GitHub Secret for SSH user
           SSH_HOST: ${{ secrets.SSH_HOST }}  # GitHub Secret for SSH host
