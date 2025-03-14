@@ -43,7 +43,9 @@ jobs:
       # Run Ansible Playbook
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
+            -e ssh_host=${{ secrets.SSH_HOST }} \
+            -e ssh_user=${{ secrets.SSH_USER }}
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Pass SSH private key via environment variable
           SSH_USER: ${{ secrets.SSH_USER }}
