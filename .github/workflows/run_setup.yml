@@ -34,8 +34,6 @@ jobs:
       # Run Ansible Playbook
       - name: Run Ansible Playbook
         run: |
-          echo "Running Ansible Playbook on host: $SSH_HOST $SSH_USER "  # Debug log
-          cat /tmp/private_key.pem
           ansible-playbook ansible/playbook.yml -i $SSH_HOST, --private-key /tmp/private_key.pem --user $SSH_USER
         env:
           SSH_USER: ${{ secrets.SSH_USER }}  # GitHub Secret for SSH user

@@ -51,7 +51,7 @@
 
     - name: Copy setup.sh to the remote server
       copy:
-        src: ./setup.sh  # Adjust the path to where your local setup.sh is
+        src: ./scripts/setup.sh  # Adjust the path to where your local setup.sh is
         dest: /opt/runai/setup.sh
         mode: '0755'  # Ensure the script is executable
 
