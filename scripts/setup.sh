@@ -3,6 +3,7 @@
 # This is the setup script that will run locally or on remote servers
 
 echo "Running setup.sh on the local or remote server"
+echo "Manoj Mukherjee"
 
 # Display system details
 echo "System Information:"
