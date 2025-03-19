@@ -3,7 +3,15 @@
 # This is the setup script that will run locally or on remote servers
 
 echo "Running setup.sh on the local or remote server"
-echo "Manoj Mukherjee"
+echo "Omkar"
+# Get the system's hostname
+HOSTNAME=$(hostname)
+
+# Get the current date and time
+CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+
+# Echo "Hello" followed by the system's hostname
+echo "[$CURRENT_TIME] Hello, $HOSTNAME"
 
 # Display system details
 echo "System Information:"
